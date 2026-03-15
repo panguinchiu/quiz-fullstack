@@ -16,7 +16,14 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <footer className="site-footer">
+          本測驗改編自 Abraham Zaleznik "Managers and Leaders: Are They Different?"《哈佛商業評論》<br />
+          僅供 EiMBA 課堂導讀互動使用，不作為專業心理評量依據。
+          <a href="/admin/login" className="admin-entry">&#9632;</a>
+        </footer>
+      </body>
     </html>
   );
 }

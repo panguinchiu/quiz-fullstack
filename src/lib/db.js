@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { QUESTIONS } from './quiz-data.js';
 
 function initDb() {
-  const dataDir = path.join(process.cwd(), 'data');
+  const dataDir = process.env.DATABASE_DIR || path.join(process.cwd(), 'data');
   mkdirSync(dataDir, { recursive: true });
   const dbPath = path.join(dataDir, 'quiz.db');
   const db = new Database(dbPath);
