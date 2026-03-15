@@ -63,14 +63,12 @@ function initDb() {
   return db;
 }
 
-let db;
-if (process.env.NODE_ENV === 'production') {
-  db = initDb();
-} else {
-  if (!global._db) global._db = initDb();
-  db = global._db;
-}
-
 export function getDb() {
-  return db;
+  if (process.env.NODE_ENV === 'production') {
+    if (!global._dbProd) global._dbProd = initDb();
+    return global._dbProd;
+  } else {
+    if (!global._db) global._db = initDb();
+    return global._db;
+  }
 }
