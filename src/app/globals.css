@@ -494,6 +494,29 @@ body {
   border-color: var(--accent);
 }
 
+/* Prev question button */
+.quiz-back-wrap {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-prev {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  padding: 6px 0;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+.btn-prev:hover {
+  color: var(--ink);
+}
+
 /* User info form on intro */
 .user-info-form {
   margin-bottom: 32px;

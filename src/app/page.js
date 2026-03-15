@@ -113,6 +113,25 @@ export default function QuizPage() {
     }
   }
 
+  function handleGoBack() {
+    if (currentQ === 0) return;
+    const lastAnswer = answers[answers.length - 1];
+    const prevQ = QUESTIONS[lastAnswer.questionIndex];
+    setAnswers(prev => prev.slice(0, -1));
+    setScores(prev => ({
+      leader: prev.leader - lastAnswer.score.leader,
+      manager: prev.manager - lastAnswer.score.manager,
+    }));
+    setDimScores(prev => ({
+      ...prev,
+      [prevQ.dimKey]: {
+        leader: prev[prevQ.dimKey].leader - lastAnswer.score.leader,
+        manager: prev[prevQ.dimKey].manager - lastAnswer.score.manager,
+      },
+    }));
+    setCurrentQ(prev => prev - 1);
+  }
+
   function handleRetake() {
     window.history.pushState({}, '', '/');
     setScreen('intro');
@@ -289,6 +308,14 @@ export default function QuizPage() {
                   </li>
                 ))}
               </ul>
+
+              {currentQ > 0 && (
+                <div className="quiz-back-wrap">
+                  <button className="btn-prev" onClick={handleGoBack}>
+                    ← 前一題
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
