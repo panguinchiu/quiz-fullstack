@@ -16,6 +16,8 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS responses (
       id TEXT PRIMARY KEY,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      name TEXT DEFAULT '',
+      grade TEXT DEFAULT '',
       persona_type TEXT NOT NULL,
       leader_score INTEGER NOT NULL,
       manager_score INTEGER NOT NULL,
@@ -40,6 +42,11 @@ function initDb() {
       password_hash TEXT NOT NULL
     );
   `);
+
+  // Migrate: add name/grade columns if not exists
+  const cols = db.pragma('table_info(responses)').map(c => c.name);
+  if (!cols.includes('name'))  db.exec("ALTER TABLE responses ADD COLUMN name TEXT DEFAULT ''");
+  if (!cols.includes('grade')) db.exec("ALTER TABLE responses ADD COLUMN grade TEXT DEFAULT ''");
 
   // Seed admin user
   const adminExists = db.prepare('SELECT id FROM admin_users WHERE username = ?').get('admin');

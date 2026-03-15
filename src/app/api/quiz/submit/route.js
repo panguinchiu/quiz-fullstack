@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { answers, scores, dimScores, personaType, leaderPct } = body;
+    const { answers, scores, dimScores, personaType, leaderPct, name, grade } = body;
 
     if (!answers || !scores || !personaType) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -17,10 +17,12 @@ export async function POST(request) {
     const id = uuidv4();
 
     db.prepare(`
-      INSERT INTO responses (id, persona_type, leader_score, manager_score, leader_pct, dimension_scores, answers)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO responses (id, name, grade, persona_type, leader_score, manager_score, leader_pct, dimension_scores, answers)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id,
+      name || '',
+      grade || '',
       personaType,
       scores.leader,
       scores.manager,

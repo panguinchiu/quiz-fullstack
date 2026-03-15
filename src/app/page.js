@@ -22,6 +22,9 @@ export default function QuizPage() {
   const [barsAnimated, setBarsAnimated] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
   const [roastOpen, setRoastOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [grade, setGrade] = useState('');
+  const [formError, setFormError] = useState('');
 
   // Animate bars when result screen shows
   useEffect(() => {
@@ -34,6 +37,9 @@ export default function QuizPage() {
   }, [screen]);
 
   function startQuiz() {
+    if (!name.trim()) { setFormError('請填寫姓名'); return; }
+    if (!grade) { setFormError('請選擇年級'); return; }
+    setFormError('');
     setScreen('quiz');
     setCurrentQ(0);
     setAnswers([]);
@@ -89,6 +95,8 @@ export default function QuizPage() {
             dimScores: newDimScores,
             personaType: personaResult.key,
             leaderPct: personaResult.leaderPct,
+            name,
+            grade,
           }),
         });
         const data = await res.json();
@@ -111,6 +119,9 @@ export default function QuizPage() {
     setResultId(null);
     setPersona(null);
     setRoastOpen(false);
+    setName('');
+    setGrade('');
+    setFormError('');
   }
 
   function handleShare() {
@@ -189,6 +200,36 @@ export default function QuizPage() {
               <span>⏱ 約 5 分鐘</span>
               <span>🎯 5 種人格類型</span>
             </div>
+            <div className="user-info-form">
+              <div className="user-info-row">
+                <div className="user-info-field">
+                  <label htmlFor="field-grade">年級 <span className="required">*</span></label>
+                  <select
+                    id="field-grade"
+                    value={grade}
+                    onChange={e => { setGrade(e.target.value); setFormError(''); }}
+                  >
+                    <option value="">請選擇年級</option>
+                    <option value="111級">111級</option>
+                    <option value="112級">112級</option>
+                    <option value="113級">113級</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+                <div className="user-info-field">
+                  <label htmlFor="field-name">姓名 <span className="required">*</span></label>
+                  <input
+                    id="field-name"
+                    type="text"
+                    placeholder="請輸入姓名"
+                    value={name}
+                    onChange={e => { setName(e.target.value); setFormError(''); }}
+                  />
+                </div>
+              </div>
+              {formError && <div className="form-error">{formError}</div>}
+            </div>
+
             <button className="btn-start" onClick={startQuiz}>
               開始測驗
             </button>

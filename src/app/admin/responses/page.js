@@ -106,6 +106,8 @@ export default function ResponsesPage() {
             <thead>
               <tr>
                 <th>日期</th>
+                <th>姓名</th>
+                <th>年級</th>
                 <th>人格類型</th>
                 <th>領導人%</th>
                 <th>操作</th>
@@ -115,6 +117,8 @@ export default function ResponsesPage() {
               {responses.map((r) => (
                 <tr key={r.id}>
                   <td style={{ fontSize: '13px', color: 'var(--muted)' }}>{formatDate(r.created_at)}</td>
+                  <td style={{ fontWeight: '600' }}>{r.name || '—'}</td>
+                  <td style={{ fontSize: '13px', color: 'var(--muted)' }}>{r.grade || '—'}</td>
                   <td>
                     <span className={`badge ${PERSONA_TYPES[r.persona_type] || 'leader'}`}>
                       {PERSONA_LABELS[r.persona_type] || r.persona_type}

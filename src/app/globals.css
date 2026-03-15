@@ -494,6 +494,65 @@ body {
   border-color: var(--accent);
 }
 
+/* User info form on intro */
+.user-info-form {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: var(--cream);
+  border-left: 3px solid var(--gold);
+}
+
+.user-info-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.user-info-field {
+  flex: 1;
+  min-width: 160px;
+}
+
+.user-info-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-family: var(--font-sans);
+  letter-spacing: 0.5px;
+}
+
+.user-info-field .required {
+  color: var(--accent);
+}
+
+.user-info-field input,
+.user-info-field select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  transition: border-color 0.2s;
+  appearance: none;
+}
+
+.user-info-field input:focus,
+.user-info-field select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.form-error {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--accent);
+  font-family: var(--font-sans);
+}
+
 /* Site footer */
 .site-footer {
   text-align: center;
