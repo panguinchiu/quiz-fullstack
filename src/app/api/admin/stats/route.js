@@ -38,7 +38,7 @@ export async function GET(request) {
     }
 
     const recentResponses = db.prepare(
-      'SELECT id, created_at, persona_type, leader_score, manager_score, leader_pct FROM responses ORDER BY created_at DESC LIMIT 10'
+      'SELECT id, created_at, name, grade, persona_type, leader_score, manager_score, leader_pct FROM responses ORDER BY created_at DESC LIMIT 10'
     ).all();
 
     return NextResponse.json({ total, today: todayCount, byPersona, recentResponses });

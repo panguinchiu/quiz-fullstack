@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../components/AdminLayout';
 import Link from 'next/link';
@@ -21,6 +21,8 @@ const PERSONA_TYPES = {
   strongManager: 'manager',
 };
 
+const GRADE_OPTIONS = ['111級', '112級', '113級', '其他'];
+
 function formatDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('zh-TW', {
@@ -39,7 +41,10 @@ export default function ResponsesPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [personaFilter, setPersonaFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
+  const [gradeFilter, setGradeFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -47,14 +52,28 @@ export default function ResponsesPage() {
       router.push('/admin/login');
       return;
     }
-    fetchResponses(token, page, personaFilter);
-  }, [page, personaFilter, router]);
+    fetchResponses(token, page, personaFilter, nameFilter, gradeFilter);
+  }, [page, personaFilter, gradeFilter, router]);
 
-  async function fetchResponses(token, p, filter) {
+  // Debounce name filter
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const token = localStorage.getItem('admin_token');
+      if (!token) return;
+      fetchResponses(token, 1, personaFilter, nameFilter, gradeFilter);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(debounceRef.current);
+  }, [nameFilter]);
+
+  async function fetchResponses(token, p, persona, name, grade) {
     setLoading(true);
     try {
       let url = `/api/admin/responses?page=${p}&limit=20`;
-      if (filter) url += `&personaType=${filter}`;
+      if (persona) url += `&personaType=${persona}`;
+      if (name)    url += `&name=${encodeURIComponent(name)}`;
+      if (grade)   url += `&grade=${encodeURIComponent(grade)}`;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -71,27 +90,60 @@ export default function ResponsesPage() {
     }
   }
 
-  function handleFilterChange(e) {
+  function handlePersonaChange(e) {
     setPersonaFilter(e.target.value);
     setPage(1);
   }
 
+  function handleGradeChange(e) {
+    setGradeFilter(e.target.value);
+    setPage(1);
+  }
+
+  const inputStyle = {
+    padding: '8px 12px',
+    fontSize: '13px',
+    border: '1.5px solid var(--border)',
+    background: '#fff',
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--ink)',
+    outline: 'none',
+  };
+
   return (
     <AdminLayout title="測驗紀錄">
-      <div className="filter-bar">
-        <span style={{ fontSize: '13px', color: 'var(--muted)' }}>共 {total} 筆</span>
-        <div className="form-group" style={{ margin: 0 }}>
-          <select
-            value={personaFilter}
-            onChange={handleFilterChange}
-            style={{ padding: '8px 12px', fontSize: '13px', border: '1.5px solid var(--border)', background: '#fff', fontFamily: 'var(--font-sans)' }}
+      {/* Filter bar */}
+      <div className="filter-bar" style={{ gap: '10px', marginBottom: '16px' }}>
+        <span style={{ fontSize: '13px', color: 'var(--muted)', whiteSpace: 'nowrap' }}>共 {total} 筆</span>
+
+        <input
+          type="text"
+          placeholder="搜尋姓名…"
+          value={nameFilter}
+          onChange={e => setNameFilter(e.target.value)}
+          style={{ ...inputStyle, width: '140px' }}
+        />
+
+        <select value={gradeFilter} onChange={handleGradeChange} style={inputStyle}>
+          <option value="">全部年級</option>
+          {GRADE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
+        </select>
+
+        <select value={personaFilter} onChange={handlePersonaChange} style={inputStyle}>
+          <option value="">全部類型</option>
+          {Object.entries(PERSONA_LABELS).map(([key, label]) => (
+            <option key={key} value={key}>{label}</option>
+          ))}
+        </select>
+
+        {(nameFilter || gradeFilter || personaFilter) && (
+          <button
+            onClick={() => { setNameFilter(''); setGradeFilter(''); setPersonaFilter(''); setPage(1); }}
+            style={{ ...inputStyle, cursor: 'pointer', color: 'var(--accent)', borderColor: 'var(--accent)', background: 'transparent' }}
           >
-            <option value="">全部類型</option>
-            {Object.entries(PERSONA_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-        </div>
+            清除篩選
+          </button>
+        )}
       </div>
 
       {loading ? (
